@@ -1,40 +1,78 @@
-local plr = game:GetService("Players").LocalPlayer
-local chr = plr.Character
-local root = chr:WaitForChild("HumanoidRootPart")
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))();
+local Window = Library.CreateLib("Weapon Fighting Simulator", "GrapeTheme");
 
-local function getWood()
-    local dist, wood = math.huge
 
-    for i, v in pairs(game:GetService("Workspace").Fight.ClientChests:GetChildren()) do
-        if v:IsA('Model') and v:FindFirstChild('Root') then
-            local mag = (root.Position - v.Root.Position).magnitude
-            if mag < dist then
-                dist = mag
-                wood = v
-            end
-        end
-    end
+-- Main
+local Main = Window:NewTab("Main");
+local MainSection = Main:NewSection("Main");
 
-    return wood
-end
+-- Vars
+local Players = game:GetService("Players");
+local lp = Players.lp;
 
-local function is_attacking()
-    for i, v in pairs(game:GetService("Workspace").Fight.Pets:GetChildren()) do
-        if string.find(v.Name, tostring(plr.UserId)) then
-            if v:FindFirstChildWhichIsA('Model').PetTarget.Value == getWood().Name then
-                return true
-            end
-        end
-    end
-end
+S = {
+    autofarmA = false;
+}
 
-while wait() do
-    if not is_attacking() then
-        local args = {
-            [1] = 0,
-            [2] = getWood().Name
-        }
+function getchar()
+    if lp.Character then 
+        return lp.Character
+    end;
+end;
 
-        workspace.Fight.Events.FightAttack:InvokeServer(unpack(args))
-    end
-end
+function autofarm(t)
+    S.autofarmA = t
+    if not S.autofarmA then
+        print("Toggle Off")
+        return
+    end;
+    
+    local char = getchar()
+    local root = char:WaitForChild("HumanoidRootPart")
+
+    local function getWood()
+        local dist, wood = math.huge
+
+        for i, v in pairs(game:GetService("Workspace").Fight.ClientChests:GetChildren()) do
+            if v:IsA('Model') and v:FindFirstChild('Root') then
+                local mag = (root.Position - v.Root.Position).magnitude;
+                if mag < dist then
+                    dist = mag;
+                    wood = v;
+                end;
+            end;
+        end;
+
+        return wood
+    end;
+
+    local function is_attacking()
+        for i, v in pairs(game:GetService("Workspace").Fight.Pets:GetChildren()) do
+            if string.find(v.Name, tostring(plr.UserId)) then
+                if v:FindFirstChildWhichIsA('Model').PetTarget.Value == getWood().Name then
+                    return true
+                end;
+            end;
+        end;
+    end;
+
+    while S.autofarmA and task.wait() do
+        if not is_attacking() then
+            workspace.Fight.Events.FightAttack:InvokeServer(0, getWood().Name)
+        end;
+    end;
+end;
+
+MainSection:NewToggle("Auto Farm", "Farms Animals For You", autofarm)
+
+
+MainSection:NewButton("Auto Collect", "Collects Stuff For You", function()
+    print("Clicked")
+end)
+
+-- Misc
+local Misc = Window:NewTab("Misc");
+local MiscSection = Misc:NewSection("Misc");
+MiscSection:NewKeybind("Menu Keybind", "Default Menu Keybind Is K", Enum.KeyCode.K, function()
+    Library:ToggleUI()
+end)
