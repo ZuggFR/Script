@@ -28,13 +28,30 @@ local function is_attacking()
     end
 end
 
-while wait() do
-    if not is_attacking() then
-        local args = {
-            [1] = 0,
-            [2] = getWood().Name
-        }
+local S = {
+    autofarmA = false;
+}
 
-        workspace.Fight.Events.FightAttack:InvokeServer(unpack(args))
+function autofarm(t)
+    S.autofarmA = t
+    if S.autofarmA then
+        while wait() do
+            if not is_attacking() then
+                local args = {
+                    [1] = 0,
+                    [2] = getWood().Name
+                }
+
+                workspace.Fight.Events.FightAttack:InvokeServer(unpack(args))
+            end
+        end
+    else
+        print("Toggle Off")
+        return
     end
-end
+end;
+
+-- Assuming you have a function like this to create the MainSection and NewToggle
+-- local MainSection = createMainSectionFunction() -- Replace with your actual function
+
+MainSection:NewToggle("Auto Farm", "Farms Animals For You", autofarm)
