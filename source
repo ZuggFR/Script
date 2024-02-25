@@ -1,0 +1,40 @@
+local plr = game:GetService("Players").LocalPlayer
+local chr = plr.Character
+local root = chr:WaitForChild("HumanoidRootPart")
+
+local function getWood()
+    local dist, wood = math.huge
+
+    for i, v in pairs(game:GetService("Workspace").Fight.ClientChests:GetChildren()) do
+        if v:IsA('Model') and v:FindFirstChild('Root') then
+            local mag = (root.Position - v.Root.Position).magnitude
+            if mag < dist then
+                dist = mag
+                wood = v
+            end
+        end
+    end
+
+    return wood
+end
+
+local function is_attacking()
+    for i, v in pairs(game:GetService("Workspace").Fight.Pets:GetChildren()) do
+        if string.find(v.Name, tostring(plr.UserId)) then
+            if v:FindFirstChildWhichIsA('Model').PetTarget.Value == getWood().Name then
+                return true
+            end
+        end
+    end
+end
+
+while wait() do
+    if not is_attacking() then
+        local args = {
+            [1] = 0,
+            [2] = getWood().Name
+        }
+
+        workspace.Fight.Events.FightAttack:InvokeServer(unpack(args))
+    end
+end
