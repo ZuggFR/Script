@@ -28,37 +28,13 @@ local function is_attacking()
     end
 end
 
-local S = {
-    autofarmA = false;
-}
+while wait() do
+    if not is_attacking() then
+        local args = {
+            [1] = 0,
+            [2] = getWood().Name
+        }
 
-function autofarm(t)
-    S.autofarmA = t
-    if S.autofarmA then
-        while wait() do
-            if not is_attacking() then
-                local args = {
-                    [1] = 0,
-                    [2] = getWood().Name
-                }
-
-                workspace.Fight.Events.FightAttack:InvokeServer(unpack(args))
-            end
-        end
-    else
-        print("Toggle Off")
-        return
+        workspace.Fight.Events.FightAttack:InvokeServer(unpack(args))
     end
 end
-
-local Main = Window:NewTab("Main")
-local MainSection = Main:NewSection("Main")
-
-MainSection:NewToggle("Auto Farm", "Farms Animals For You", function(state)
-    if state then
-        autofarm(true)
-    else
-        S.autofarmA = false
-        print("Toggle Off")
-    end
-end)
