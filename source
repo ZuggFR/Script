@@ -8,7 +8,7 @@ local MainSection = Main:NewSection("Main");
 
 -- Vars
 local Players = game:GetService("Players");
-local lp = Players.lp;
+local lp = Players.LocalPlayer
 
 S = {
     autofarmA = false;
